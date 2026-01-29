@@ -2,16 +2,22 @@
 Basic Flask Web Application with Navigation
 ============================================
 A simple web app with Home, About, and Contact pages.
-Debug mode is enabled for development purposes.
 """
 
+import os
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
-# Enable debug mode for verbose error messages and stack traces
-app.config['DEBUG'] = True
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+# Security: Load configuration from environment variables
+# NEVER enable debug mode in production - it exposes sensitive information
+# and enables the Werkzeug debugger console which allows arbitrary code execution
+app.config['DEBUG'] = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+app.config['TEMPLATES_AUTO_RELOAD'] = app.config['DEBUG']
+
+# Security: SECRET_KEY is required for session security and CSRF protection
+# Generate a secure key with: python -c "import secrets; print(secrets.token_hex(32))"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32).hex())
 
 
 @app.route('/')
@@ -33,5 +39,9 @@ def contact():
 
 
 if __name__ == '__main__':
-    # Run in debug mode with verbose error messages
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Security: Debug mode controlled by environment variable (defaults to False)
+    # In production, use a proper WSGI server like Gunicorn instead of Flask's dev server
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')  # Default to localhost for security
+    port = int(os.environ.get('FLASK_PORT', '5000'))
+    app.run(debug=debug_mode, host=host, port=port)
