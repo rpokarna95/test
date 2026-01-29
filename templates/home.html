@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Home - My Web App{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Welcome to My Web App</h1>
+    <p class="lead">This is the landing page of your application.</p>
+</section>
+
+<section class="content-section">
+    <h2>Getting Started</h2>
+    <p>This is a basic web application with navigation between multiple pages. 
+       Use the navigation bar above to explore different sections.</p>
+    
+    <div class="features">
+        <div class="feature-card">
+            <h3>Home Page</h3>
+            <p>You are currently viewing the home page - the main landing page of the application.</p>
+        </div>
+        <div class="feature-card">
+            <h3>About Page</h3>
+            <p>Learn more about this application and its purpose on the About page.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Contact Page</h3>
+            <p>Find contact information and placeholder content on the Contact page.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
