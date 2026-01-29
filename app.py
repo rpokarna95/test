@@ -32,6 +32,12 @@ def contact():
     return render_template('contact.html', active_page='contact')
 
 
+@app.route('/calculator')
+def calculator():
+    """Render the calculator page."""
+    return render_template('calculator.html', active_page='calculator')
+
+
 if __name__ == '__main__':
     # Run in debug mode with verbose error messages
     app.run(debug=True, host='0.0.0.0', port=5000)
