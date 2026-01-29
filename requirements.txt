@@ -1,0 +1,4 @@
+# Web Framework - pinned to specific version for stability
+Flask==3.0.3
+# Production WSGI server (use instead of Flask's dev server)
+gunicorn==23.0.0
