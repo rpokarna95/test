@@ -69,3 +69,7 @@ venv.bak/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated log files
+*.log
+sandbox_operational.log
