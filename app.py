@@ -38,6 +38,12 @@ def contact():
     return render_template('contact.html', active_page='contact')
 
 
+@app.route('/calculator')
+def calculator():
+    """Render the calculator page."""
+    return render_template('calculator.html', active_page='calculator')
+
+
 if __name__ == '__main__':
     # Security: Debug mode controlled by environment variable (defaults to False)
     # In production, use a proper WSGI server like Gunicorn instead of Flask's dev server

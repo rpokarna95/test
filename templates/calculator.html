@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Calculator - My Web App{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <h1>Calculator</h1>
+    <p class="lead">Perform basic arithmetic operations</p>
+</section>
+
+<section class="content-section">
+    <div class="calculator-wrapper">
+        <div class="calculator">
+            <div class="calculator-display">
+                <div class="display-expression" id="expression"></div>
+                <div class="display-result" id="display">0</div>
+            </div>
+            <div class="calculator-buttons">
+                <button class="btn btn-clear" onclick="clearAll()">C</button>
+                <button class="btn btn-clear" onclick="clearEntry()">CE</button>
+                <button class="btn btn-operator" onclick="appendOperator('%')">%</button>
+                <button class="btn btn-operator" onclick="appendOperator('/')">÷</button>
+                
+                <button class="btn btn-number" onclick="appendNumber('7')">7</button>
+                <button class="btn btn-number" onclick="appendNumber('8')">8</button>
+                <button class="btn btn-number" onclick="appendNumber('9')">9</button>
+                <button class="btn btn-operator" onclick="appendOperator('*')">×</button>
+                
+                <button class="btn btn-number" onclick="appendNumber('4')">4</button>
+                <button class="btn btn-number" onclick="appendNumber('5')">5</button>
+                <button class="btn btn-number" onclick="appendNumber('6')">6</button>
+                <button class="btn btn-operator" onclick="appendOperator('-')">−</button>
+                
+                <button class="btn btn-number" onclick="appendNumber('1')">1</button>
+                <button class="btn btn-number" onclick="appendNumber('2')">2</button>
+                <button class="btn btn-number" onclick="appendNumber('3')">3</button>
+                <button class="btn btn-operator" onclick="appendOperator('+')">+</button>
+                
+                <button class="btn btn-number btn-zero" onclick="appendNumber('0')">0</button>
+                <button class="btn btn-number" onclick="appendDecimal()">.</button>
+                <button class="btn btn-equals" onclick="calculate()">=</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    let currentInput = '0';
+    let previousInput = '';
+    let operator = null;
+    let shouldResetDisplay = false;
+
+    function updateDisplay() {
+        const display = document.getElementById('display');
+        const expression = document.getElementById('expression');
+        
+        display.textContent = currentInput;
+        
+        if (previousInput && operator) {
+            const opSymbol = getOperatorSymbol(operator);
+            expression.textContent = previousInput + ' ' + opSymbol;
+        } else {
+            expression.textContent = '';
+        }
+    }
+
+    function getOperatorSymbol(op) {
+        const symbols = {
+            '+': '+',
+            '-': '−',
+            '*': '×',
+            '/': '÷',
+            '%': '%'
+        };
+        return symbols[op] || op;
+    }
+
+    function appendNumber(num) {
+        if (shouldResetDisplay) {
+            currentInput = num;
+            shouldResetDisplay = false;
+        } else if (currentInput === '0' && num !== '0') {
+            currentInput = num;
+        } else if (currentInput !== '0') {
+            currentInput += num;
+        }
+        updateDisplay();
+    }
+
+    function appendDecimal() {
+        if (shouldResetDisplay) {
+            currentInput = '0.';
+            shouldResetDisplay = false;
+        } else if (!currentInput.includes('.')) {
+            currentInput += '.';
+        }
+        updateDisplay();
+    }
+
+    function appendOperator(op) {
+        if (operator && !shouldResetDisplay) {
+            calculate();
+        }
+        
+        previousInput = currentInput;
+        operator = op;
+        shouldResetDisplay = true;
+        updateDisplay();
+    }
+
+    function calculate() {
+        if (!operator || !previousInput) return;
+        
+        const prev = parseFloat(previousInput);
+        const current = parseFloat(currentInput);
+        let result;
+
+        switch (operator) {
+            case '+':
+                result = prev + current;
+                break;
+            case '-':
+                result = prev - current;
+                break;
+            case '*':
+                result = prev * current;
+                break;
+            case '/':
+                if (current === 0) {
+                    result = 'Error';
+                } else {
+                    result = prev / current;
+                }
+                break;
+            case '%':
+                result = prev % current;
+                break;
+            default:
+                return;
+        }
+
+        if (result === 'Error') {
+            currentInput = 'Error';
+        } else {
+            // Handle floating point precision
+            currentInput = parseFloat(result.toPrecision(12)).toString();
+        }
+        
+        previousInput = '';
+        operator = null;
+        shouldResetDisplay = true;
+        updateDisplay();
+    }
+
+    function clearAll() {
+        currentInput = '0';
+        previousInput = '';
+        operator = null;
+        shouldResetDisplay = false;
+        updateDisplay();
+    }
+
+    function clearEntry() {
+        currentInput = '0';
+        shouldResetDisplay = false;
+        updateDisplay();
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(event) {
+        const key = event.key;
+        
+        if (/[0-9]/.test(key)) {
+            appendNumber(key);
+        } else if (key === '.') {
+            appendDecimal();
+        } else if (key === '+' || key === '-') {
+            appendOperator(key);
+        } else if (key === '*' || key === 'x' || key === 'X') {
+            appendOperator('*');
+        } else if (key === '/') {
+            event.preventDefault();
+            appendOperator('/');
+        } else if (key === '%') {
+            appendOperator('%');
+        } else if (key === 'Enter' || key === '=') {
+            event.preventDefault();
+            calculate();
+        } else if (key === 'Escape') {
+            clearAll();
+        } else if (key === 'Backspace') {
+            clearEntry();
+        }
+    });
+
+    // Initialize display
+    updateDisplay();
+</script>
+{% endblock %}
